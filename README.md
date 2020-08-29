@@ -42,6 +42,8 @@ sign = calc_sign(data, secret_rule)
 sign = await calc_sign_async(data, secret_rule)
 ```
 
+See also: https://github.com/acgnhiki/bili-spyder-example
+
 ## About the wasm file
 the wasm file is downloaded from https://i0.hdslb.com/bfs/live/e791556706f88d88b4846a61a583b31db007f83d.wasm and the file name is its `sha1`.
 
