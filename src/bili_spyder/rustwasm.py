@@ -56,7 +56,7 @@ class RustWasm:
 class Object(dict):
     def __getattr__(self, name: str) -> Any:
         if name not in self:
-            raise AttributeError(f" The object has no attribute '{name}'")
+            raise AttributeError(f"The object has no attribute '{name}'")
 
         value = self[name]
 
@@ -102,7 +102,7 @@ class StdWeb:
     def alloc(self, size: int) -> int:
         return self.wasm.web_malloc(size)
 
-    def prepare_any_arg(self, value: Any) -> Any:
+    def prepare_any_arg(self, value: Any) -> int:
         address = self.alloc(16)
         self.from_py(address, value)
         return address
