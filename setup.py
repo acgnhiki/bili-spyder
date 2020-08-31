@@ -6,7 +6,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
     name='bili-spyder',
-    version='0.1.0',
+    version='0.2.0',
     description="Calculating the signature of the Bilibili's heartbeat requests",
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -33,5 +33,5 @@ setup(
     package_dir={'': 'src'},
     packages=find_packages('src'),
     include_package_data=True,
-    install_requires=['wasmer'],
+    install_requires=['wasmtime>=0.19.0'],
 )

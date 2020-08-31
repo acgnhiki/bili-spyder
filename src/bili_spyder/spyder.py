@@ -1,18 +1,17 @@
-#!/usr/bin/env python3
 import json
 import asyncio
-from pathlib import Path
-# from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import ProcessPoolExecutor
 from typing import Dict, Iterable, Union
 
 from pkg_resources import resource_filename
 
-from .rustwasm import RustWasm, StdWeb, Object, Array
+from .rustwasm import RustWasm
+from .stdweb import StdWeb, Object, Array
 
 __all__ = 'calc_sign', 'calc_sign_async', 'set_executor'
 
 # mimics DOM objects to bypass the web guardian environment checking
+# spyder_web::guardian::check_environment::h355cdaf82eda6d99
 window = Object({
     'location': {
         'href': 'https://live.bilibili.com/3',
@@ -178,11 +177,8 @@ imports = {
 pathname = resource_filename(__name__, 'data/e791556706f88d88b4846a61a583b31db007f83d.wasm')
 wasm = RustWasm(pathname, imports)
 stdweb = StdWeb(wasm)
-spyder = wasm.exports.spyder
-
-# workaround for the LookupError
-wasm.web_malloc = wasm.exports.__web_malloc
-wasm.web_free = wasm.exports.__web_free
+spyder = wasm.exports['spyder']
+executor = None
 
 def calc_sign(data: Dict[str, Union[str, int]], secret_rule: Iterable[int]) -> str:
     input_string = json.dumps(data)
@@ -197,16 +193,7 @@ def calc_sign(data: Dict[str, Union[str, int]], secret_rule: Iterable[int]) -> s
 
 async def calc_sign_async(data: Dict[str, Union[str, int]], secret_rule: Iterable[int]) -> str:
     loop = asyncio.get_event_loop()
-
-    if executor is None:
-        # with ThreadPoolExecutor(max_workers=1) as e: # ExportedFunction is unsendable
-        with ProcessPoolExecutor(max_workers=1) as e:
-            return await loop.run_in_executor(e, calc_sign, data, secret_rule)
-    else:
-        return await loop.run_in_executor(executor, calc_sign, data, secret_rule)
-
-
-executor = None
+    return await loop.run_in_executor(executor, calc_sign, data, secret_rule)
 
 def set_executor(e: Union[ProcessPoolExecutor, None]) -> None:
     global executor
